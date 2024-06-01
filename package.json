@@ -1,0 +1,16 @@
+{
+  "name": "jrt-scraper",
+  "version": "1.0.0",
+  "description": "Ticket availabilty scraper for jrt.lv",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "author": "Janis Kikans",
+  "license": "ISC",
+  "dependencies": {
+    "linkedom": "^0.18.2"
+  }
+}
