@@ -1,4 +1,6 @@
 const { parseHTML } = require('linkedom');
+const { sendMessage } = require('./src/discordSender')
+const {EmbedBuilder, codeBlock} = require("discord.js");
 
 const TARGET_URL = 'https://www.jrt.lv/en/calendar/';
 
@@ -8,7 +10,7 @@ const fetchPageContent = async () => {
     return await response.text();
 }
 
-const getAvailablePlays = async () => {
+const getPlays = async () => {
     const { document } = parseHTML(await fetchPageContent());
 
     const repertoiresList = document.querySelector('.repertoires-list-v2');
@@ -38,7 +40,7 @@ const getAvailablePlays = async () => {
             title,
             location,
             price: priceEl ? priceEl.textContent : null,
-            isAvailable: !soldOutTextEl,
+            isAvailable: !soldOutTextEl && priceEl,
         })
     })
 
@@ -63,9 +65,30 @@ const outputPlaysInfoTable = (plays) => {
     console.table(tableData);
 }
 
+const sendNotifications = async (plays) => {
+    const availablePlays = plays.filter(play => play.isAvailable);
+    let playMessage = '';
+
+    availablePlays.forEach(play => {
+        playMessage += `${play.date.toLocaleString('en-GB')} - ${play.title} - ${play.price}\n`;
+    })
+
+    const embedField = {
+        name: 'Izrādes',
+        value: codeBlock(playMessage),
+    }
+
+    const embed = new EmbedBuilder()
+        .setTitle('JRT.lv')
+        .addFields(embedField)
+
+    await sendMessage('', [embed]);
+}
+
 const scrape = async () => {
-    const plays = await getAvailablePlays();
+    const plays = await getPlays();
     outputPlaysInfoTable(plays);
+    sendNotifications(plays);
 }
 
 scrape();
