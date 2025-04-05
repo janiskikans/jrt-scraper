@@ -78,9 +78,13 @@ const sendNotifications = async (plays) => {
         value: codeBlock(playMessage),
     }
 
-    const embed = new EmbedBuilder()
-        .setTitle('JRT.lv')
-        .addFields(embedField)
+    const embed = new EmbedBuilder().setTitle('JRT.lv');
+
+    if (availablePlays.length) {
+        embed.addFields(embedField);
+    } else {
+        embed.setDescription(`Nav pieejamu izrāžu. Kopā atrastas ${plays.length} izrādes.`);
+    }
 
     await sendMessage('', [embed]);
 }
